@@ -19,7 +19,7 @@
  *   npx @tradewink/mcp --endpoint https://...           # custom endpoint
  */
 
-import { randomBytes } from "node:crypto";
+import { randomBytes, timingSafeEqual } from "node:crypto";
 import { createServer } from "node:http";
 import { mkdirSync, readFileSync, writeFileSync, existsSync } from "node:fs";
 import { homedir } from "node:os";
@@ -207,7 +207,7 @@ class TradewinkOAuthProvider implements OAuthClientProvider {
         // sent on the authorize URL (CSRF / code-injection protection).
         const expectedState = authorizationUrl.searchParams.get("state");
         const gotState = u.searchParams.get("state");
-        if (!expectedState || gotState !== expectedState) {
+        if (!expectedState || !gotState || !safeEqual(gotState, expectedState)) {
           res.writeHead(400, { "Content-Type": "text/plain; charset=utf-8" });
           res.end("OAuth state mismatch. Close this window and retry sign-in.");
           return;
@@ -417,4 +417,10 @@ if (process.argv[2] === "setup") {
     console.error("Fatal error:", err);
     process.exit(1);
   });
+}
+
+function safeEqual(a: string, b: string): boolean {
+  const ab = Buffer.from(a, "utf8");
+  const bb = Buffer.from(b, "utf8");
+  return ab.length === bb.length && timingSafeEqual(ab, bb);
 }
