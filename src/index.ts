@@ -203,6 +203,15 @@ class TradewinkOAuthProvider implements OAuthClientProvider {
           res.writeHead(404).end();
           return;
         }
+        // KAV-245: reject callbacks whose `state` doesn't match the value we
+        // sent on the authorize URL (CSRF / code-injection protection).
+        const expectedState = authorizationUrl.searchParams.get("state");
+        const gotState = u.searchParams.get("state");
+        if (!expectedState || gotState !== expectedState) {
+          res.writeHead(400, { "Content-Type": "text/plain; charset=utf-8" });
+          res.end("OAuth state mismatch. Close this window and retry sign-in.");
+          return;
+        }
         const code = u.searchParams.get("code");
         const err = u.searchParams.get("error");
         res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
