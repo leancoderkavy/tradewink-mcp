@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Document the recommended Tradewink signals + official Alpaca MCP execution workflow, with paper trading enabled by default and a risk disclaimer.
+- Update package metadata to highlight agent signals, Alpaca pairing, and paper trading.
+
 ## 0.3.0 — 2026-05-12
 
 - Bridge `tradewink-mcp-bridge` and stdio server now report `version: "0.3.0"`.
