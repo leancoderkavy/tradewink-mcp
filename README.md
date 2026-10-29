@@ -1,6 +1,6 @@
 # @tradewink/mcp
 
-Connect any LLM to the [Tradewink](https://tradewink.com) autonomous trading platform via the [Model Context Protocol](https://modelcontextprotocol.io).
+Connect any LLM to [Tradewink](https://tradewink.com) signals and analysis via the [Model Context Protocol](https://modelcontextprotocol.io), then pair it with Alpaca for agent-driven execution.
 
 Get real-time quotes, manage your portfolio, execute trades, run AI analysis, and more — all from your AI assistant.
 
@@ -136,6 +136,48 @@ Ask your AI assistant things like:
 - "Add TSLA to my watchlist"
 - "What are my active trading strategies?"
 - "Show my trade history for the past week"
+
+## Tradewink Signals + Alpaca Execution
+
+Use `tradewink-mcp` as the signal and research layer for your agent, and the [official Alpaca MCP server](https://github.com/alpacahq/alpaca-mcp-server) as the execution layer. This keeps Tradewink's market context, screeners, technical analysis, and AI insights separate from the broker tools that place orders.
+
+This is an integration pattern: no Alpaca order-execution code is added to `tradewink-mcp`.
+
+Add both servers to the same Claude Desktop or Cursor MCP configuration:
+
+```json
+{
+  "mcpServers": {
+    "tradewink": {
+      "command": "npx",
+      "args": ["-y", "@tradewink/mcp"]
+    },
+    "alpaca": {
+      "command": "uvx",
+      "args": ["alpaca-mcp-server"],
+      "env": {
+        "ALPACA_API_KEY": "your_paper_api_key",
+        "ALPACA_SECRET_KEY": "your_paper_secret_key",
+        "ALPACA_PAPER_TRADE": "true"
+      }
+    }
+  }
+}
+```
+
+The official Alpaca server uses `uvx` and defaults to paper trading; the explicit `ALPACA_PAPER_TRADE` setting above makes the safety boundary visible. Create paper keys in Alpaca's dashboard and keep credentials in your local MCP client configuration. See the [Alpaca MCP setup and configuration docs](https://github.com/alpacahq/alpaca-mcp-server#setup).
+
+### Example agent workflow
+
+Ask the agent to:
+
+1. Get a Tradewink signal, such as market movers plus `get_technical_analysis` or `analyze_ticker` for `AAPL`.
+2. Check the current quote and paper-account buying power, define a maximum loss/risk budget, and size the position from that budget rather than blindly copying a signal.
+3. If the thesis and sizing pass review, place a paper order with Alpaca's `place_stock_order`, then report the order details and risk controls.
+
+For example: “Use Tradewink to find a bullish AAPL setup, explain the signal and invalidation level, size it to no more than 1% of my paper account, and—only after I confirm—place the corresponding paper order through Alpaca.”
+
+Tradewink signals are informational and may be incomplete, delayed, or wrong. Trading involves substantial risk, including loss of principal; an agent can misunderstand data or instructions. Review every signal, size, and order yourself, and do not switch `ALPACA_PAPER_TRADE` to `false` until you understand and accept the risks.
 
 ## Available Tools
 

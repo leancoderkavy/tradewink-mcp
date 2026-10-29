@@ -4,10 +4,15 @@
   "publishConfig": {
     "access": "public"
   },
-  "description": "Connect any LLM to the Tradewink autonomous trading platform via MCP",
+  "description": "Tradewink signals for AI agents; pair with Alpaca MCP for paper-trading execution",
   "keywords": [
     "tradewink",
     "mcp",
+    "mcp-server",
+    "signals",
+    "alpaca",
+    "agent",
+    "paper-trading",
     "trading",
     "ai",
     "llm",
