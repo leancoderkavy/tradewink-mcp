@@ -1,7 +1,8 @@
 # Changelog
 
-## Unreleased
+## 0.3.1 (unreleased, HOLD-PUBLISH)
 
+- Add `mcpName: io.github.leancoderkavy/tradewink` so the Official MCP Registry can verify the npm package (KAV-91).
 - Document the recommended Tradewink signals + official Alpaca MCP execution workflow, with paper trading enabled by default and a risk disclaimer.
 - Update package metadata to highlight agent signals, Alpaca pairing, and paper trading.
 
